@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Poetry Generator</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=i5oWe1AT"></script>
+  </head>
+  <body>
+    <div class="header">
+      <div class="item1">
+        <a href="./index.html"><img src="./robot logo.avif" class="logo" /></a>
+      </div>
+      <div class="item2"><p class="titleClass">Poetry Generator</p></div>
+      <div class="item3">
+        <a href="./aboutus.html"><p class="abtus">About Us</p></a>
+      </div>
+    </div>
+    <div class="inputbox">
+      <div class="instruction">Choose your preferences</div>
+      <div class="inputt">
+        <label for="title" class="keywordslabel">Enter a title:</label>
+        <input type="text" id="title" name="title" class="box" />
+        <br />
+        <label for="max-lines" class="keywordslabel"
+          >Enter a maximum number of lines:</label
+        >
+        <input
+          type="number"
+          id="max-lines"
+          name="max-lines"
+          min="1"
+          class="box"
+        />
+        <br />
+      </div>
+    </div>
+    <button id="buttonNext" onclicK="dublu()">
+      <div id="parent">
+        <div id="triangle-right"></div>
+      </div>
+    </button>
+    <br />
+    <br />
+    <p id="titluu" class="titluc"></p>
+    <p id="author" class="autor"></p>
+    <div class="organizare">
+      <button
+        onclick="speak()"
+        class="speaking"
+        id="startv"
+        style="display: none"
+      >
+        Read out loud
+      </button>
+      <button
+        onclick="stopvoice()"
+        class="speaking"
+        id="stopv"
+        style="display: none"
+      >
+        Stop Reading
+      </button>
+    </div>
+    <br />
+    <div class="coloane">
+      <p id="poem" class="poezie" style="display: none"></p>
+      <div id="result" class="poza">
+        <img
+          src=""
+          id="idPoza"
+          style="max-width: 300px; max-height: none"
+          class="poza1"
+        />
+      </div>
+    </div>
+    <script>
+      function stopvoice() {
+        $("#startv").show();
+        $("#stopv").hide();
+        responsiveVoice.cancel();
+      }
+      function speak() {
+        $("#stopv").show();
+        $("#startv").hide();
+        let poemElement = document.getElementById("poem");
+        let poemText = poemElement.innerHTML;
+        let modifiedText = poemText.replace(/<br>/g, " ");
+        let modifiedElement = document.createElement("div");
+        modifiedElement.innerHTML = modifiedText;
+        responsiveVoice.speak(modifiedElement.innerHTML);
+      }
+      function dispare() {
+        switch (event.target.id) {
+          case "parent":
+            {
+              $("#buttonNext").hide();
+              $(".inputbox").hide();
+              $(".poezie").show();
+              $("#startv").show();
+            }
+            break;
+        }
+      }
+      function dublu() {
+        generatePoem();
+        dispare();
+      }
+      function generatePoem() {
+        const title = document.getElementById("title").value;
+        const maxLines = document.getElementById("max-lines").value;
+        const url = `https://poetrydb.org/title/${title}`;
+        $.getJSON(url, function (data) {
+          const poem = data[0];
+          const author = poem.author;
+          const lines = poem.lines;
+          const numLines = Math.min(lines.length, maxLines);
+          const truncatedLines = lines.slice(0, numLines);
+          const formattedLines = truncatedLines.map((line) => {
+            return line.charAt(0).toUpperCase() + line.slice(1);
+          });
+          const formattedPoem = formattedLines.join("<br>");
+          document.getElementById("author").innerHTML = `By ${author}`;
+          document.getElementById("poem").innerHTML = formattedPoem;
+          document.getElementById("titluu").innerHTML =
+            title.charAt(0).toUpperCase() + title.slice(1);
+        });
+      }
+      $(document).ready(function () {
+        $("#buttonNext").click(function () {
+          var query = $("#title").val();
+          var url =
+            "https://api.unsplash.com/photos/random?query=" +
+            query +
+            "&client_id=O3AV9XFyJutuy5y8ihIcwOvvj9-4EteJhYzIvjzW25k";
+          $.getJSON(url, function (data) {
+            var img_url = data.urls.regular;
+            document.getElementById("idPoza").src = img_url;
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
